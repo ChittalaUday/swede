@@ -20,22 +20,6 @@
       "dest": "/$1"
     }
   ],
-  "env": {
-    "NEXT_PUBLIC_SUPABASE_URL": "@supabase_url",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase_anon_key",
-    "GOOGLE_DRIVE_CLIENT_ID": "@google_drive_client_id",
-    "GOOGLE_DRIVE_CLIENT_SECRET": "@google_drive_client_secret",
-    "GOOGLE_DRIVE_ACCESS_TOKEN_1": "@google_drive_access_token_1",
-    "GOOGLE_DRIVE_REFRESH_TOKEN_1": "@google_drive_refresh_token_1",
-    "GOOGLE_DRIVE_ACCESS_TOKEN_2": "@google_drive_access_token_2",
-    "GOOGLE_DRIVE_REFRESH_TOKEN_2": "@google_drive_refresh_token_2",
-    "GOOGLE_DRIVE_ACCESS_TOKEN_3": "@google_drive_access_token_3",
-    "GOOGLE_DRIVE_REFRESH_TOKEN_3": "@google_drive_refresh_token_3",
-    "ADMIN_USERNAME": "@admin_username",
-    "ADMIN_PASSWORD": "@admin_password",
-    "ENCRYPTION_SECRET": "@encryption_secret",
-    "SESSION_SECRET": "@session_secret"
-  },
   "build": {
     "env": {
       "NODE_OPTIONS": "--no-warnings"

@@ -57,6 +57,27 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Deployment to Vercel
+
+This project is configured for deployment to Vercel. If you encounter build errors related to native Node.js modules like `odbc`, it's likely due to unused dependencies that require system-level libraries.
+
+### Troubleshooting Build Issues
+
+If you see errors like:
+```
+../src/odbc.h:30:10: fatal error: sql.h: No such file or directory
+```
+
+This indicates that a dependency is trying to compile a native module that requires system libraries not available in Vercel's build environment.
+
+To fix this:
+1. Check for unused dependencies that might be pulling in native modules
+2. Remove them from package.json
+3. Run `npm install` to update the lock file
+4. Deploy again
+
+The `magic-ui` package was previously causing this issue as it pulls in `odbc` and `odbc-pool` as dependencies. These have been removed since they were not being used in the project.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
