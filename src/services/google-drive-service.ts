@@ -31,10 +31,18 @@ class GoogleDriveService {
     },
     {
       id: "drive2",
-      name: "Backup Wedding Drive",
+      name: "Secondary Wedding Drive",
       accessToken: process.env.GOOGLE_DRIVE_ACCESS_TOKEN_2 || "access-token-2",
       refreshToken: process.env.GOOGLE_DRIVE_REFRESH_TOKEN_2 || "refresh-token-2",
       spaceUsed: 1.2 * 1024 * 1024 * 1024, // 1.2 GB
+      spaceLimit: 15 * 1024 * 1024 * 1024, // 15 GB
+    },
+    {
+      id: "drive3",
+      name: "Backup Wedding Drive",
+      accessToken: process.env.GOOGLE_DRIVE_ACCESS_TOKEN_3 || "access-token-3",
+      refreshToken: process.env.GOOGLE_DRIVE_REFRESH_TOKEN_3 || "refresh-token-3",
+      spaceUsed: 0.8 * 1024 * 1024 * 1024, // 0.8 GB
       spaceLimit: 15 * 1024 * 1024 * 1024, // 15 GB
     }
   ];

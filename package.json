@@ -24,6 +24,7 @@
     "@react-three/fiber": "^9.3.0",
     "@react-three/postprocessing": "^3.0.4",
     "@studio-freight/lenis": "^1.0.42",
+    "@supabase/supabase-js": "^2.74.0",
     "@types/canvas-confetti": "^1.9.0",
     "animejs": "^4.2.1",
     "canvas-confetti": "^1.9.3",

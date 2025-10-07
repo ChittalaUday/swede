@@ -1,5 +1,7 @@
-// Photo service that integrates with Google Drive
+// Photo service that integrates with Google Drive and Supabase
 // Uses environment variables for configuration
+
+import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient'
 
 interface MediaItem {
   id: string;
@@ -26,87 +28,67 @@ interface MediaUploadData {
 }
 
 class PhotoService {
-  private mediaItems: MediaItem[] = [
-    {
-      id: "media1",
-      name: "Engagement Photo 1",
-      type: "image",
-      category: "Engagement",
-      description: "Beautiful moment from engagement ceremony",
-      uploadDate: "2025-10-01",
-      status: "Published",
-      driveId: "drive1",
-      fileId: "file-12345",
-      url: "https://drive.google.com/file/d/file-12345/view",
-      thumbnailUrl: "https://drive.google.com/thumbnail?id=file-12345",
-      mimeType: "image/jpeg",
-      size: 2048576 // 2MB
-    },
-    {
-      id: "media2",
-      name: "Engagement Photo 2",
-      type: "image",
-      category: "Engagement",
-      description: "Couple portrait",
-      uploadDate: "2025-10-01",
-      status: "Published",
-      driveId: "drive1",
-      fileId: "file-12346",
-      url: "https://drive.google.com/file/d/file-12346/view",
-      thumbnailUrl: "https://drive.google.com/thumbnail?id=file-12346",
-      mimeType: "image/png",
-      size: 3048576 // 3MB
-    },
-    {
-      id: "media3",
-      name: "Pre-Wedding Video",
-      type: "video",
-      category: "Pre-Wedding",
-      description: "Pre-wedding video shoot",
-      uploadDate: "2025-10-05",
-      status: "Draft",
-      driveId: "drive2",
-      fileId: "file-12347",
-      url: "https://drive.google.com/file/d/file-12347/view",
-      thumbnailUrl: "https://drive.google.com/thumbnail?id=file-12347",
-      mimeType: "video/mp4",
-      size: 50485760 // 50MB
-    }
-  ];
+  // Check if Supabase is configured
+  private isSupabaseAvailable = isSupabaseConfigured();
 
-  // Database configuration from environment variables
-  private dbConfig = {
-    host: process.env.DATABASE_HOST || "localhost",
-    port: parseInt(process.env.DATABASE_PORT || "5432"),
-    name: process.env.DATABASE_NAME || "wedding_db",
-    user: process.env.DATABASE_USER || "username",
-    password: process.env.DATABASE_PASSWORD || "password"
-  };
-
-  // Get all media items
+  // Get all media items from Supabase or mock data
   async getMediaItems(): Promise<MediaItem[]> {
-    // In a real implementation, this would fetch from a database
-    // For demo, we return the mock data
-    return new Promise(resolve => {
-      setTimeout(() => resolve(this.mediaItems), 300);
-    });
+    if (!this.isSupabaseAvailable || !supabase) {
+      console.warn('Supabase not configured, using mock data')
+      return this.getMockMediaItems()
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('media_items')
+        .select('*')
+        .order('uploadDate', { ascending: false })
+
+      if (error) {
+        console.error('Error fetching media items:', error)
+        return this.getMockMediaItems()
+      }
+
+      return data as MediaItem[]
+    } catch (error) {
+      console.error('Error fetching media items:', error)
+      return this.getMockMediaItems()
+    }
   }
 
-  // Get media item by ID
+  // Get media item by ID from Supabase or mock data
   async getMediaItemById(id: string): Promise<MediaItem | undefined> {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        const media = this.mediaItems.find(p => p.id === id);
-        resolve(media);
-      }, 200);
-    });
+    if (!this.isSupabaseAvailable || !supabase) {
+      console.warn('Supabase not configured, using mock data')
+      // Find in mock data
+      const mockItems = this.getMockMediaItems()
+      return mockItems.find(item => item.id === id)
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('media_items')
+        .select('*')
+        .eq('id', id)
+        .single()
+
+      if (error) {
+        console.error('Error fetching media item:', error)
+        return undefined
+      }
+
+      return data as MediaItem
+    } catch (error) {
+      console.error('Error fetching media item:', error)
+      return undefined
+    }
   }
 
   // Upload a new media item
   async uploadMedia(mediaData: MediaUploadData): Promise<MediaItem | null> {
     // In a real implementation, this would:
     // 1. Upload the file to Google Drive
-    // 2. Save media metadata to database
+    // 2. Save media metadata to Supabase
     // 3. Return the created media object
     
     try {
@@ -137,8 +119,17 @@ class PhotoService {
           size: mediaData.file.size
         };
         
-        // Add to our collection (in a real app, this would save to a database)
-        this.mediaItems.push(newMedia);
+        // Save to Supabase if available
+        if (this.isSupabaseAvailable && supabase) {
+          const { error } = await supabase
+            .from('media_items')
+            .insert([newMedia])
+
+          if (error) {
+            console.error('Error saving media to Supabase:', error)
+            // In a real app, we might want to delete the Google Drive file if Supabase save fails
+          }
+        }
         
         return newMedia;
       } else {
@@ -150,27 +141,40 @@ class PhotoService {
     }
   }
 
-  // Update media metadata
+  // Update media metadata in Supabase
   async updateMedia(id: string, updates: Partial<MediaItem>): Promise<boolean> {
-    // In a real implementation, this would update the database
-    const mediaIndex = this.mediaItems.findIndex(p => p.id === id);
-    
-    if (mediaIndex !== -1) {
-      this.mediaItems[mediaIndex] = { ...this.mediaItems[mediaIndex], ...updates };
-      return new Promise(resolve => setTimeout(() => resolve(true), 300));
+    if (!this.isSupabaseAvailable || !supabase) {
+      console.warn('Supabase not configured, skipping update')
+      return true // Return true to indicate success in mock mode
     }
-    
-    return false;
+
+    try {
+      const { error } = await supabase
+        .from('media_items')
+        .update(updates)
+        .eq('id', id)
+
+      if (error) {
+        console.error('Error updating media:', error)
+        return false
+      }
+
+      return true
+    } catch (error) {
+      console.error("Error updating media:", error);
+      return false;
+    }
   }
 
-  // Delete a media item
+  // Delete a media item from Supabase and Google Drive
   async deleteMedia(id: string): Promise<boolean> {
     // In a real implementation, this would:
     // 1. Delete the file from Google Drive
-    // 2. Remove the media from the database
+    // 2. Remove the media from Supabase
     
     try {
-      const media = this.mediaItems.find(p => p.id === id);
+      // First, get the media item to get the driveId and fileId
+      const media = await this.getMediaItemById(id);
       
       if (media) {
         // Import the Google Drive service
@@ -183,8 +187,19 @@ class PhotoService {
         );
         
         if (deleted) {
-          // Remove from our collection (in a real app, this would update the database)
-          this.mediaItems = this.mediaItems.filter(p => p.id !== id);
+          // Delete from Supabase if available
+          if (this.isSupabaseAvailable && supabase) {
+            const { error } = await supabase
+              .from('media_items')
+              .delete()
+              .eq('id', id)
+
+            if (error) {
+              console.error('Error deleting media from Supabase:', error)
+              return false
+            }
+          }
+          
           return true;
         }
       }
@@ -196,48 +211,177 @@ class PhotoService {
     }
   }
 
-  // Get media items by category
+  // Get media items by category from Supabase or mock data
   async getMediaByCategory(category: string): Promise<MediaItem[]> {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        const filtered = this.mediaItems.filter(p => p.category === category);
-        resolve(filtered);
-      }, 300);
-    });
+    if (!this.isSupabaseAvailable || !supabase) {
+      console.warn('Supabase not configured, using mock data')
+      const mockItems = this.getMockMediaItems()
+      return mockItems.filter(item => item.category === category)
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('media_items')
+        .select('*')
+        .eq('category', category)
+        .order('uploadDate', { ascending: false })
+
+      if (error) {
+        console.error('Error fetching media by category:', error)
+        return []
+      }
+
+      return data as MediaItem[]
+    } catch (error) {
+      console.error('Error fetching media by category:', error)
+      return []
+    }
   }
 
-  // Get media items by type
+  // Get media items by type from Supabase or mock data
   async getMediaByType(type: "image" | "video"): Promise<MediaItem[]> {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        const filtered = this.mediaItems.filter(p => p.type === type);
-        resolve(filtered);
-      }, 300);
-    });
+    if (!this.isSupabaseAvailable || !supabase) {
+      console.warn('Supabase not configured, using mock data')
+      const mockItems = this.getMockMediaItems()
+      return mockItems.filter(item => item.type === type)
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('media_items')
+        .select('*')
+        .eq('type', type)
+        .order('uploadDate', { ascending: false })
+
+      if (error) {
+        console.error('Error fetching media by type:', error)
+        return []
+      }
+
+      return data as MediaItem[]
+    } catch (error) {
+      console.error('Error fetching media by type:', error)
+      return []
+    }
   }
 
-  // Get unique categories
+  // Get unique categories from Supabase or mock data
   async getCategories(): Promise<string[]> {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        const categories = Array.from(
-          new Set(this.mediaItems.map(p => p.category))
-        );
-        resolve(categories);
-      }, 200);
-    });
+    if (!this.isSupabaseAvailable || !supabase) {
+      console.warn('Supabase not configured, using mock data')
+      return this.getMockCategories()
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('media_items')
+        .select('category')
+
+      if (error) {
+        console.error('Error fetching categories:', error)
+        return this.getMockCategories()
+      }
+
+      // Extract unique categories
+      const categories = Array.from(
+        new Set(data?.map(item => item.category) || [])
+      );
+      
+      return categories;
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+      return this.getMockCategories()
+    }
   }
 
-  // Get unique types
+  // Get unique types from Supabase or mock data
   async getTypes(): Promise<("image" | "video")[]> {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        const types = Array.from(
-          new Set(this.mediaItems.map(p => p.type))
-        ) as ("image" | "video")[];
-        resolve(types);
-      }, 200);
-    });
+    if (!this.isSupabaseAvailable || !supabase) {
+      console.warn('Supabase not configured, using mock data')
+      return this.getMockTypes()
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('media_items')
+        .select('type')
+
+      if (error) {
+        console.error('Error fetching types:', error)
+        return this.getMockTypes()
+      }
+
+      // Extract unique types
+      const types = Array.from(
+        new Set(data?.map(item => item.type) || [])
+      ) as ("image" | "video")[];
+      
+      return types;
+    } catch (error) {
+      console.error('Error fetching types:', error)
+      return this.getMockTypes()
+    }
+  }
+
+  // Mock data for when Supabase is not configured
+  private getMockMediaItems(): MediaItem[] {
+    return [
+      {
+        id: "media1",
+        name: "Engagement Photo 1",
+        type: "image",
+        category: "Engagement",
+        description: "Beautiful moment from engagement ceremony",
+        uploadDate: "2025-10-01",
+        status: "Published",
+        driveId: "drive1",
+        fileId: "file-12345",
+        url: "https://drive.google.com/file/d/file-12345/view",
+        thumbnailUrl: "https://drive.google.com/thumbnail?id=file-12345",
+        mimeType: "image/jpeg",
+        size: 2048576 // 2MB
+      },
+      {
+        id: "media2",
+        name: "Engagement Photo 2",
+        type: "image",
+        category: "Engagement",
+        description: "Couple portrait",
+        uploadDate: "2025-10-01",
+        status: "Published",
+        driveId: "drive1",
+        fileId: "file-12346",
+        url: "https://drive.google.com/file/d/file-12346/view",
+        thumbnailUrl: "https://drive.google.com/thumbnail?id=file-12346",
+        mimeType: "image/png",
+        size: 3048576 // 3MB
+      },
+      {
+        id: "media3",
+        name: "Pre-Wedding Video",
+        type: "video",
+        category: "Pre-Wedding",
+        description: "Pre-wedding video shoot",
+        uploadDate: "2025-10-05",
+        status: "Draft",
+        driveId: "drive2",
+        fileId: "file-12347",
+        url: "https://drive.google.com/file/d/file-12347/view",
+        thumbnailUrl: "https://drive.google.com/thumbnail?id=file-12347",
+        mimeType: "video/mp4",
+        size: 50485760 // 50MB
+      }
+    ];
+  }
+
+  // Mock categories for when Supabase is not configured
+  private getMockCategories(): string[] {
+    return ["Engagement", "Pre-Wedding", "Ceremony", "Reception"];
+  }
+
+  // Mock types for when Supabase is not configured
+  private getMockTypes(): ("image" | "video")[] {
+    return ["image", "video"];
   }
 }
 

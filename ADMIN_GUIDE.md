@@ -12,16 +12,18 @@ cp .env.example .env
 
 ### Required Environment Variables
 
-- `DATABASE_URL`: PostgreSQL connection string
-- `DATABASE_HOST`: Database host (default: localhost)
-- `DATABASE_PORT`: Database port (default: 5432)
-- `DATABASE_NAME`: Database name (default: wedding_db)
-- `DATABASE_USER`: Database username
-- `DATABASE_PASSWORD`: Database password
+- `NEXT_PUBLIC_SUPABASE_URL`: Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase anonymous key
+- `SUPABASE_SERVICE_ROLE_KEY`: Supabase service role key
 - `GOOGLE_DRIVE_CLIENT_ID`: Google Drive OAuth2 client ID
 - `GOOGLE_DRIVE_CLIENT_SECRET`: Google Drive OAuth2 client secret
 - `GOOGLE_DRIVE_REDIRECT_URI`: OAuth2 redirect URI
-- `GOOGLE_DRIVE_REFRESH_TOKEN`: Google Drive refresh token
+- `GOOGLE_DRIVE_ACCESS_TOKEN_1`: Google Drive account 1 access token
+- `GOOGLE_DRIVE_REFRESH_TOKEN_1`: Google Drive account 1 refresh token
+- `GOOGLE_DRIVE_ACCESS_TOKEN_2`: Google Drive account 2 access token
+- `GOOGLE_DRIVE_REFRESH_TOKEN_2`: Google Drive account 2 refresh token
+- `GOOGLE_DRIVE_ACCESS_TOKEN_3`: Google Drive account 3 access token
+- `GOOGLE_DRIVE_REFRESH_TOKEN_3`: Google Drive account 3 refresh token
 - `ADMIN_USERNAME`: Admin username for login
 - `ADMIN_PASSWORD`: Admin password for login (should be hashed)
 - `ENCRYPTION_SECRET`: Secret key for encryption
@@ -55,7 +57,7 @@ For demo purposes, the default credentials are:
 
 ### Google Drive Integration
 - Media files are automatically stored in Google Drive
-- Multiple drive accounts supported for redundancy
+- Three drive accounts supported for redundancy
 - Automatic selection of drive account with most available space
 - Storage usage monitoring across all accounts
 - Support for both image and video file types
@@ -73,7 +75,7 @@ For demo purposes, the default credentials are:
 3. Selects a media file to upload (images or videos)
 4. System automatically selects the Google Drive account with the most available space
 5. Media is uploaded to Google Drive
-6. Media metadata is stored in the system
+6. Media metadata is stored in Supabase database
 7. Media appears in the admin dashboard (initially as "Draft")
 
 ### Publishing Media
@@ -103,8 +105,9 @@ For demo purposes, the default credentials are:
 ## Technical Implementation
 
 ### Services
-- `photo-service.ts`: Handles media operations (CRUD)
-- `google-drive-service.ts`: Manages Google Drive integration
+- `photo-service.ts`: Handles media operations (CRUD) with Supabase integration
+- `google-drive-service.ts`: Manages Google Drive integration across 3 accounts
+- `supabaseClient.ts`: Supabase client configuration
 
 ### Authentication
 - `auth-context.tsx`: Provides authentication context throughout the app
@@ -116,8 +119,28 @@ For demo purposes, the default credentials are:
 - Loading states for async operations
 - Category management system
 
+## Database Schema
+
+The application uses Supabase with the following table structure:
+
+### media_items table
+- `id` (string): Unique identifier
+- `name` (string): Media name
+- `type` (string): Media type ("image" or "video")
+- `category` (string): Media category
+- `description` (string): Media description
+- `uploadDate` (string): Upload date
+- `status` (string): Media status ("Draft" or "Published")
+- `driveId` (string): Google Drive account ID
+- `fileId` (string): Google Drive file ID
+- `url` (string): Direct link to media
+- `thumbnailUrl` (string): Thumbnail URL
+- `mimeType` (string): File MIME type
+- `size` (number): File size in bytes
+
 ## Security Notes
 - In a production environment, proper OAuth2 authentication with Google Drive would be required
 - Passwords should be properly hashed and stored
 - API endpoints should be secured with proper authentication tokens
 - Environment variables should never be committed to version control
+- Supabase keys should be properly secured and rotated regularly

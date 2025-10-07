@@ -7,14 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { photoService } from "@/services/photo-service";
-import {
-  Heart,
-  Lock,
-  Loader2,
-  Image as ImageIcon,
-  Video,
-  Play,
-} from "lucide-react";
+import { Lock, Loader2, Image as ImageIcon, Video, Play } from "lucide-react";
 
 // Define media item type
 type MediaItem = {

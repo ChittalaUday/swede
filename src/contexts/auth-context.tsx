@@ -14,18 +14,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Get admin credentials from environment variables
-  const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "wedding2025";
-  const SESSION_SECRET = process.env.SESSION_SECRET || "your-session-secret-key";
+  const ADMIN_USERNAME = process.env.NEXT_PUBLIC_ADMIN_USERNAME || process.env.ADMIN_USERNAME || "admin";
+  const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || "wedding2025";
+  const SESSION_SECRET = process.env.NEXT_PUBLIC_SESSION_SECRET || process.env.SESSION_SECRET || "your-session-secret-key";
 
   // Check if user is already logged in on initial load
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
     if (token) {
       // In a real application, you would verify the token with your backend
-      setIsAuthenticated(true);
+      try {
+        // Simple token verification (in a real app, this would be a JWT or similar)
+        const decoded = atob(token);
+        const [username, timestamp, secret] = decoded.split(':');
+        
+        // Check if token is still valid (24 hours)
+        const tokenAge = Date.now() - parseInt(timestamp);
+        if (tokenAge < 24 * 60 * 60 * 1000 && secret === SESSION_SECRET) {
+          setIsAuthenticated(true);
+        } else {
+          // Token expired, remove it
+          localStorage.removeItem("adminToken");
+        }
+      } catch (e) {
+        // Invalid token, remove it
+        localStorage.removeItem("adminToken");
+      }
     }
-  }, []);
+  }, [SESSION_SECRET]);
 
   const login = async (username: string, password: string): Promise<boolean> => {
     // In a real application, this would be an API call to your backend
