@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 
 export default function WeddingDetailsPage() {
-  const [weddingDate] = useState(new Date("2025-10-27T13:54:00"));
+  const [weddingDate] = useState(new Date("2025-10-22T23:44:00"));
 
   // Format the wedding date for display
   const formattedWeddingDate = weddingDate.toLocaleDateString("en-US", {
