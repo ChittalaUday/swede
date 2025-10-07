@@ -25,7 +25,8 @@ class GoogleDriveService {
       id: "drive1",
       name: "Primary Wedding Drive",
       accessToken: process.env.GOOGLE_DRIVE_ACCESS_TOKEN_1 || "access-token-1",
-      refreshToken: process.env.GOOGLE_DRIVE_REFRESH_TOKEN_1 || "refresh-token-1",
+      refreshToken:
+        process.env.GOOGLE_DRIVE_REFRESH_TOKEN_1 || "refresh-token-1",
       spaceUsed: 2.4 * 1024 * 1024 * 1024, // 2.4 GB
       spaceLimit: 5 * 1024 * 1024 * 1024, // 5 GB
     },
@@ -33,7 +34,8 @@ class GoogleDriveService {
       id: "drive2",
       name: "Secondary Wedding Drive",
       accessToken: process.env.GOOGLE_DRIVE_ACCESS_TOKEN_2 || "access-token-2",
-      refreshToken: process.env.GOOGLE_DRIVE_REFRESH_TOKEN_2 || "refresh-token-2",
+      refreshToken:
+        process.env.GOOGLE_DRIVE_REFRESH_TOKEN_2 || "refresh-token-2",
       spaceUsed: 1.2 * 1024 * 1024 * 1024, // 1.2 GB
       spaceLimit: 15 * 1024 * 1024 * 1024, // 15 GB
     },
@@ -41,26 +43,42 @@ class GoogleDriveService {
       id: "drive3",
       name: "Backup Wedding Drive",
       accessToken: process.env.GOOGLE_DRIVE_ACCESS_TOKEN_3 || "access-token-3",
-      refreshToken: process.env.GOOGLE_DRIVE_REFRESH_TOKEN_3 || "refresh-token-3",
+      refreshToken:
+        process.env.GOOGLE_DRIVE_REFRESH_TOKEN_3 || "refresh-token-3",
       spaceUsed: 0.8 * 1024 * 1024 * 1024, // 0.8 GB
       spaceLimit: 15 * 1024 * 1024 * 1024, // 15 GB
-    }
+    },
   ];
 
   // Supported file types
-  private supportedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-  private supportedVideoTypes = ['video/mp4', 'video/quicktime', 'video/avi', 'video/webm', 'video/mov'];
-  
+  private supportedImageTypes = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+  ];
+  private supportedVideoTypes = [
+    "video/mp4",
+    "video/quicktime",
+    "video/avi",
+    "video/webm",
+    "video/mov",
+  ];
+
   getSupportedImageTypes(): string[] {
     return this.supportedImageTypes;
   }
-  
+
   getSupportedVideoTypes(): string[] {
     return this.supportedVideoTypes;
   }
-  
+
   isSupportedFileType(fileType: string): boolean {
-    return this.supportedImageTypes.includes(fileType) || this.supportedVideoTypes.includes(fileType);
+    return (
+      this.supportedImageTypes.includes(fileType) ||
+      this.supportedVideoTypes.includes(fileType)
+    );
   }
 
   // Get all drive accounts
@@ -70,7 +88,7 @@ class GoogleDriveService {
 
   // Get account by ID
   getAccountById(id: string): DriveAccount | undefined {
-    return this.accounts.find(account => account.id === id);
+    return this.accounts.find((account) => account.id === id);
   }
 
   // Get the account with the most available space
@@ -83,7 +101,10 @@ class GoogleDriveService {
   }
 
   // Simulate uploading a file to Google Drive
-  async uploadFile(file: File, folderName: string = "Wedding Media"): Promise<UploadResult> {
+  async uploadFile(
+    file: File,
+    folderName: string = "Wedding Media"
+  ): Promise<UploadResult> {
     // In a real implementation, this would:
     // 1. Check available space across all accounts
     // 2. Select the account with the most space
@@ -94,34 +115,34 @@ class GoogleDriveService {
     if (!this.isSupportedFileType(file.type)) {
       return {
         success: false,
-        error: `Unsupported file type: ${file.type}`
+        error: `Unsupported file type: ${file.type}`,
       };
     }
 
     // For demo purposes, we'll simulate the upload
     const selectedDrive = this.getAccountWithMostSpace();
-    
+
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     // Simulate successful upload
     const success = Math.random() > 0.1; // 90% success rate for demo
-    
+
     if (success) {
       // Update space used (in a real app, this would come from the API)
       selectedDrive.spaceUsed += file.size;
-      
+
       return {
         success: true,
         fileId: `file-${Date.now()}`,
         fileName: file.name,
         driveId: selectedDrive.id,
-        mimeType: file.type
+        mimeType: file.type,
       };
     } else {
       return {
         success: false,
-        error: "Failed to upload file to Google Drive"
+        error: "Failed to upload file to Google Drive",
       };
     }
   }
@@ -132,28 +153,28 @@ class GoogleDriveService {
     // 1. Find the account by driveId
     // 2. Delete the file using the Google Drive API
     // 3. Update space usage
-    
+
     // For demo purposes, we'll simulate the deletion
     const account = this.getAccountById(driveId);
     if (account) {
       // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       // Simulate successful deletion
       return Math.random() > 0.05; // 95% success rate for demo
     }
-    
+
     return false;
   }
 
   // Get drive usage statistics
   getUsageStats() {
-    return this.accounts.map(account => ({
+    return this.accounts.map((account) => ({
       id: account.id,
       name: account.name,
       used: account.spaceUsed,
       limit: account.spaceLimit,
-      percentage: (account.spaceUsed / account.spaceLimit) * 100
+      percentage: (account.spaceUsed / account.spaceLimit) * 100,
     }));
   }
 }

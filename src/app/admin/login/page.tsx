@@ -5,7 +5,14 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useAuth } from "@/contexts/auth-context";
 import { motion } from "framer-motion";
 import { Lock, Eye, EyeOff } from "lucide-react";
@@ -17,7 +24,7 @@ export default function AdminLoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showDemoCreds, setShowDemoCreds] = useState(true);
-  
+
   const router = useRouter();
   const { isAuthenticated, login } = useAuth();
 
@@ -62,7 +69,8 @@ export default function AdminLoginPage() {
             </div>
             <CardTitle className="text-2xl font-bold">Admin Login</CardTitle>
             <CardDescription>
-              Enter your credentials to access the wedding media management dashboard
+              Enter your credentials to access the wedding media management
+              dashboard
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
@@ -109,20 +117,18 @@ export default function AdminLoginPage() {
               )}
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isLoading}
-              >
+              <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
-              
+
               {showDemoCreds && (
                 <div className="text-center text-sm text-muted-foreground">
                   <p>For demo purposes, use:</p>
-                  <p className="font-mono">Username: admin | Password: wedding2025</p>
-                  <Button 
-                    variant="link" 
+                  <p className="font-mono">
+                    Username: admin | Password: wedding2025
+                  </p>
+                  <Button
+                    variant="link"
                     className="text-xs mt-2 p-0 h-auto"
                     onClick={() => setShowDemoCreds(false)}
                   >
@@ -130,10 +136,10 @@ export default function AdminLoginPage() {
                   </Button>
                 </div>
               )}
-              
+
               {!showDemoCreds && (
-                <Button 
-                  variant="link" 
+                <Button
+                  variant="link"
                   className="text-xs p-0 h-auto"
                   onClick={() => setShowDemoCreds(true)}
                 >
@@ -143,10 +149,13 @@ export default function AdminLoginPage() {
             </CardFooter>
           </form>
         </Card>
-        
+
         <div className="mt-8 text-center text-sm text-muted-foreground">
           <p>Environment variables are used for configuration.</p>
-          <p>See <code className="bg-muted px-1 rounded">.env.example</code> for required variables.</p>
+          <p>
+            See <code className="bg-muted px-1 rounded">.env.example</code> for
+            required variables.
+          </p>
         </div>
       </motion.div>
     </div>

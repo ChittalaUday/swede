@@ -33,11 +33,13 @@ See [ADMIN_GUIDE.md](ADMIN_GUIDE.md) for detailed information about required env
 ## Wedding Website Features
 
 ### Public Pages
+
 - **Homepage**: Wedding countdown and couple introduction
 - **Wedding Details**: Comprehensive information about the wedding (restructured into sections)
 - **Media Gallery**: View published photos and videos with category filtering
 
 ### Admin Features
+
 - **Admin Dashboard**: Secure area for managing wedding media
 - **Media Management**: Upload, edit, and delete photos and videos with Google Drive integration
 - **Category Management**: Create and manage custom categories for organizing media

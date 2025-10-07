@@ -35,5 +35,10 @@
     "ADMIN_PASSWORD": "@admin_password",
     "ENCRYPTION_SECRET": "@encryption_secret",
     "SESSION_SECRET": "@session_secret"
+  },
+  "build": {
+    "env": {
+      "NODE_OPTIONS": "--no-warnings"
+    }
   }
 }
