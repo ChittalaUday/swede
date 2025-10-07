@@ -20,6 +20,32 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Environment Variables
+
+This project requires environment variables for database and Google Drive integration. Copy the `.env.example` file to `.env` and update the values:
+
+```bash
+cp .env.example .env
+```
+
+See [ADMIN_GUIDE.md](ADMIN_GUIDE.md) for detailed information about required environment variables.
+
+## Wedding Website Features
+
+### Public Pages
+- **Homepage**: Wedding countdown and couple introduction
+- **Wedding Details**: Comprehensive information about the wedding (restructured into sections)
+- **Media Gallery**: View published photos and videos with category filtering
+
+### Admin Features
+- **Admin Dashboard**: Secure area for managing wedding media
+- **Media Management**: Upload, edit, and delete photos and videos with Google Drive integration
+- **Category Management**: Create and manage custom categories for organizing media
+- **Multi-Account Storage**: Automatic distribution of media across multiple Google Drive accounts
+- **Authentication**: Secure login system for authorized access
+
+For detailed information about admin features, see [ADMIN_GUIDE.md](ADMIN_GUIDE.md).
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

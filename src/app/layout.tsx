@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import FloatingBackground from "@/components/background/floating-background";
+import { AuthProvider } from "@/contexts/auth-context";
+
+import { ReactLenis } from "@/utils/lenis";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,9 +28,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        {children}
-      </body>
+      <ReactLenis root>
+        <body className={`${geistSans.variable} ${geistMono.variable}`}>
+          <AuthProvider>
+            <FloatingBackground />
+            {children}
+          </AuthProvider>
+        </body>
+      </ReactLenis>
     </html>
   );
 }
