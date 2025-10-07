@@ -34,16 +34,19 @@ cp .env.example .env
 ## Admin Dashboard Access
 
 To access the admin dashboard:
+
 1. Navigate to `/admin/login`
 2. Use the admin credentials set in your environment variables
 
 For demo purposes, the default credentials are:
+
 - Username: `admin`
 - Password: `wedding2025`
 
 ## Features
 
 ### Media Management
+
 - Upload new photos and videos with categories and descriptions
 - Edit existing media details (name, category, description, publish status)
 - Delete media from the gallery
@@ -51,11 +54,13 @@ For demo purposes, the default credentials are:
 - Filter media by type (images or videos)
 
 ### Category Management
+
 - Create and manage custom categories for organizing media
 - Assign media to specific categories
 - Filter media by category in the public gallery
 
 ### Google Drive Integration
+
 - Media files are automatically stored in Google Drive
 - Three drive accounts supported for redundancy
 - Automatic selection of drive account with most available space
@@ -63,6 +68,7 @@ For demo purposes, the default credentials are:
 - Support for both image and video file types
 
 ### Authentication
+
 - Secure login system
 - Session management
 - Logout functionality
@@ -70,6 +76,7 @@ For demo purposes, the default credentials are:
 ## How It Works
 
 ### Media Upload Process
+
 1. Admin selects "Add Media" from the dashboard
 2. Fills in media details (name, type, category, description)
 3. Selects a media file to upload (images or videos)
@@ -79,11 +86,13 @@ For demo purposes, the default credentials are:
 7. Media appears in the admin dashboard (initially as "Draft")
 
 ### Publishing Media
+
 1. Media items are initially saved as "Draft" status
 2. Admin can edit any media item to change its status to "Published"
 3. Only "Published" media appears in the public media gallery
 
 ### Storage Management
+
 - The system monitors storage usage across all connected Google Drive accounts
 - Visual indicators show storage usage for each account
 - When one drive is full, the system automatically uses another account
@@ -91,12 +100,14 @@ For demo purposes, the default credentials are:
 ## Supported File Types
 
 ### Images
+
 - JPEG/JPG
 - PNG
 - GIF
 - WebP
 
 ### Videos
+
 - MP4
 - MOV
 - AVI
@@ -105,14 +116,17 @@ For demo purposes, the default credentials are:
 ## Technical Implementation
 
 ### Services
+
 - `photo-service.ts`: Handles media operations (CRUD) with Supabase integration
 - `google-drive-service.ts`: Manages Google Drive integration across 3 accounts
 - `supabaseClient.ts`: Supabase client configuration
 
 ### Authentication
+
 - `auth-context.tsx`: Provides authentication context throughout the app
 
 ### Components
+
 - Admin dashboard with responsive design
 - Modal dialogs for media upload and editing
 - Visual storage indicators
@@ -124,6 +138,7 @@ For demo purposes, the default credentials are:
 The application uses Supabase with the following table structure:
 
 ### media_items table
+
 - `id` (string): Unique identifier
 - `name` (string): Media name
 - `type` (string): Media type ("image" or "video")
@@ -139,6 +154,7 @@ The application uses Supabase with the following table structure:
 - `size` (number): File size in bytes
 
 ## Security Notes
+
 - In a production environment, proper OAuth2 authentication with Google Drive would be required
 - Passwords should be properly hashed and stored
 - API endpoints should be secured with proper authentication tokens

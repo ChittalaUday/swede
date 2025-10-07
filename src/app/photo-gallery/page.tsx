@@ -28,7 +28,7 @@ type MediaItem = {
 
 export default function PhotoGalleryPage() {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>(["All", "Engagement", "Pre-Wedding", "Ceremony", "Reception"]);
   const [types, setTypes] = useState<("image" | "video")[]>(["image", "video"]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -41,21 +41,24 @@ export default function PhotoGalleryPage() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [fetchedMedia, fetchedCategories, fetchedTypes] =
-          await Promise.all([
-            photoService.getMediaItems(),
-            photoService.getCategories(),
-            photoService.getTypes(),
-          ]);
+        // Only fetch data if we're in the browser (not during build)
+        if (typeof window !== 'undefined') {
+          const [fetchedMedia, fetchedCategories, fetchedTypes] =
+            await Promise.all([
+              photoService.getMediaItems(),
+              photoService.getCategories(),
+              photoService.getTypes(),
+            ]);
 
-        // Filter only published media for the gallery
-        const publishedMedia = fetchedMedia.filter(
-          (media) => media.status === "Published"
-        );
+          // Filter only published media for the gallery
+          const publishedMedia = fetchedMedia.filter(
+            (media) => media.status === "Published"
+          );
 
-        setMediaItems(publishedMedia);
-        setCategories(["All", ...fetchedCategories]);
-        setTypes(fetchedTypes);
+          setMediaItems(publishedMedia);
+          setCategories(["All", ...fetchedCategories]);
+          setTypes(fetchedTypes);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
